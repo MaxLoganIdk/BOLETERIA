@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal</title>
+    <link rel="stylesheet" href="/Boleteria/css/estilos.css">
+    <style>
+        .cartelera {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pelicula {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pelicula img {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<center>
+    
+    <div style="text-align: right;">
+        <a href="/Usuario/Login/Login.html">
+            <button type="button">CERRAR SESION</button>
+        </a>
+        <a href="/Usuario/Principal/Mi cuenta.html">
+            <button type="button">VER CUENTA</button>
+        </a>
+    </div>
+
+
+    <h1>BIENVENIDO AL SISTEMA PRINCIPAL</h1>
+    <img src="/Boleteria/imagenes/publicidad.png" alt="publicidad" width="1000">
+
+    <h1>CARTELERA DEL CINE</h1>
+
+    <div class="cartelera">
+
+        <div class="pelicula">
+            <img src="/Boleteria/imagenes/coyote.jpg" alt="coyote" width="200">
+            <a href="funcion.html">
+                <button>VER FUNCIONES</button>
+            </a>
+        </div>
+
+        <div class="pelicula">
+            <img src="/Boleteria/imagenes/doom.jpg" alt="doomsday" width="200">
+            <a href="funcion.html">
+                <button>VER FUNCIONES</button>
+            </a>
+        </div>
+
+        <div class="pelicula">
+            <img src="/Boleteria/imagenes/Resident.png" alt="resident evil" width="200">
+            <a href="funcion.html">
+                <button>VER FUNCIONES</button>
+            </a>
+        </div>
+
+    </div>
+
+</center>
+
+
+    <br> <br>  
+
+    <h3>
+        <p1>Consultas</p1>
+        <br>   <br>
+    <a href="consultas.html">
+        <button type="button">Libro de reclamaciones</button>
+    </a>
+    </h3>
+
+
+</body>
+
+</html>

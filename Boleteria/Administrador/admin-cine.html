@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de administración · Cartelera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #141116;
+    --surface: #1E1A22;
+    --surface-2: #26212B;
+    --line: #34303A;
+    --gold: #E8B84B;
+    --gold-dim: #7A6531;
+    --text: #F2EFEA;
+    --text-dim: #A79FAE;
+    --ok: #7FA37A;
+    --danger: #C97465;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    display:flex;
+    min-height:100vh;
+  }
+  .display{ font-family:'Bebas Neue', sans-serif; letter-spacing:0.02em; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:230px;
+    flex-shrink:0;
+    background: #0F0D11;
+    border-right:1px solid var(--line);
+    padding:28px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:34px;
+  }
+  .brand{
+    font-size:28px;
+    line-height:1;
+    color:var(--gold);
+  }
+  .brand small{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-size:11px;
+    color:var(--text-dim);
+    letter-spacing:0.04em;
+    margin-top:4px;
+  }
+  nav{ display:flex; flex-direction:column; gap:2px; }
+  nav a{
+    color:var(--text-dim);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    padding:10px 12px;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+  nav a.active{
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: inset 3px 0 0 var(--gold);
+  }
+  nav a:hover:not(.active){ color:var(--text); }
+  .nav-icon{ width:16px; text-align:center; opacity:0.9; }
+  .sidebar-footer{
+    margin-top:auto;
+    font-size:12px;
+    color:var(--text-dim);
+    border-top:1px solid var(--line);
+    padding-top:16px;
+  }
+  .sidebar-footer strong{ color:var(--text); display:block; font-size:13px; }
+
+  /* ---------- Main ---------- */
+  main{
+    flex:1;
+    padding:32px 40px 60px;
+    max-width:1180px;
+  }
+  .view-section{ display:none; }
+  .view-section.active{ display:block; }
+
+  .top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:26px;
+    gap:20px;
+  }
+  h1{
+    font-size:34px;
+    margin:0 0 6px;
+  }
+  .subtitle{ color:var(--text-dim); font-size:14px; margin:0; }
+  .btn{
+    border:none;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    border-radius:7px;
+    padding:11px 18px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition: transform .12s ease, background .12s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background: var(--gold);
+    color:#211a08;
+  }
+  .btn-primary:hover{ background:#f0c565; }
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text);
+  }
+  .btn-ghost:hover{ border-color:#4a4552; }
+  .btn-danger{ background: var(--danger); color:#2b1512; }
+  .btn-danger:hover{ background:#d68575; }
+
+  .filters{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+  .filters input, .filters select{
+    background: var(--surface);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:9px 12px;
+    border-radius:7px;
+    font-size:13px;
+    font-family:'Inter',sans-serif;
+  }
+  .filters input{ flex:1; max-width:280px; }
+
+  .empty-state{
+    background: var(--surface);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:50px 20px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:14px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--surface);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  thead th{
+    text-align:left;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-dim);
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{
+    padding:12px 16px;
+    font-size:14px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background: var(--surface-2); }
+  .movie-cell{ display:flex; align-items:center; gap:12px; }
+  .poster-thumb{
+    width:38px; height:52px;
+    border-radius:4px;
+    object-fit:cover;
+    background: var(--surface-2);
+    flex-shrink:0;
+  }
+  .movie-name{ font-weight:600; font-size:14px; }
+  .movie-meta{ font-size:12px; color:var(--text-dim); }
+
+  .tag{
+    font-size:11px;
+    font-weight:600;
+    padding:4px 9px;
+    border-radius:20px;
+    display:inline-block;
+  }
+  .tag-estreno{ background: rgba(232,184,75,0.15); color:var(--gold); }
+  .tag-cartelera, .tag-activa, .tag-programada{ background: rgba(127,163,122,0.15); color:var(--ok); }
+  .tag-proximamente{ background: rgba(167,159,174,0.15); color:var(--text-dim); }
+  .tag-mantenimiento, .tag-cancelada{ background: rgba(201,116,101,0.15); color:var(--danger); }
+
+  .row-actions{ display:flex; gap:6px; }
+  .icon-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    width:30px; height:30px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+  }
+  .icon-btn:hover{ color:var(--text); border-color:#4a4552; }
+  .icon-btn.danger:hover{ color:var(--danger); border-color:var(--danger); }
+
+  /* ---------- Overlay + panel ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background: rgba(10,9,11,0.6);
+    display:none;
+    z-index:10;
+  }
+  .overlay.open{ display:block; }
+
+  .panel{
+    position:fixed;
+    top:0; right:-460px;
+    width:440px;
+    height:100%;
+    background: var(--surface);
+    border-left:1px solid var(--line);
+    transition: right .25s ease;
+    display:flex;
+    flex-direction:column;
+    z-index:20;
+  }
+  .panel.open{ right:0; }
+
+  .panel-header{
+    padding:22px 26px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .panel-header h2{ font-size:22px; margin:0; font-weight:700; font-family:'Inter',sans-serif;}
+  .panel-close{
+    background:none; border:none; color:var(--text-dim);
+    font-size:20px; cursor:pointer; line-height:1;
+  }
+  .panel-close:hover{ color:var(--text); }
+
+  .panel-body{
+    padding:24px 26px;
+    overflow-y:auto;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text-dim);
+    margin-bottom:7px;
+  }
+  .field .error-msg{
+    display:none;
+    font-size:11px;
+    color:var(--danger);
+    margin-top:5px;
+  }
+  .field.invalid input,
+  .field.invalid select,
+  .field.invalid textarea{
+    border-color: var(--danger) !important;
+  }
+  .field.invalid .error-msg{ display:block; }
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=date],
+  .field input[type=time],
+  .field textarea,
+  .field select{
+    width:100%;
+    background: var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:7px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+  }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .field-row{ display:flex; gap:14px; }
+  .field-row .field{ flex:1; }
+
+  .price-input{ position:relative; }
+  .price-input span{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    color:var(--text-dim); font-size:14px;
+  }
+  .price-input input{ padding-left:30px !important; }
+
+  .upload-box{
+    border:1.5px dashed var(--line);
+    border-radius:10px;
+    background: var(--surface-2);
+    padding:22px;
+    text-align:center;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+  }
+  .upload-box:hover{ border-color: var(--gold-dim); }
+  .upload-box input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer;
+  }
+  .upload-box .upload-icon{ font-size:22px; margin-bottom:8px; }
+  .upload-box .upload-text{ font-size:13px; color:var(--text-dim); }
+  .upload-box .upload-text strong{ color:var(--gold); font-weight:600; }
+  .upload-box .upload-hint{ font-size:11px; color:var(--text-dim); margin-top:4px; }
+  .upload-box.has-image{ padding:0; border-style:solid; }
+  .upload-box.has-image img{
+    width:100%; max-height:200px; object-fit:cover; display:block;
+  }
+  .remove-image{
+    display:none;
+    font-size:11px;
+    color:var(--danger);
+    background:none;
+    border:none;
+    cursor:pointer;
+    margin-top:6px;
+    padding:0;
+  }
+  .remove-image.show{ display:inline-block; }
+
+  .panel-footer{
+    padding:18px 26px;
+    border-top:1px solid var(--line);
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+  }
+
+  .status-toggle{
+    display:flex;
+    gap:8px;
+  }
+  .status-option{
+    flex:1;
+    text-align:center;
+    padding:9px 6px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    color:var(--text-dim);
+  }
+  .status-option.selected.estreno{ border-color:var(--gold); color:var(--gold); background: rgba(232,184,75,0.08); }
+  .status-option.selected.ok{ border-color:var(--ok); color:var(--ok); background: rgba(127,163,122,0.08); }
+  .status-option.selected.bad{ border-color:var(--danger); color:var(--danger); background: rgba(201,116,101,0.08); }
+  .status-option.selected.proximamente{ border-color:var(--text-dim); color:var(--text); background: var(--surface-2); }
+
+  .audit-note{
+    font-size:11px;
+    color:var(--text-dim);
+    background: var(--surface-2);
+    border-radius:7px;
+    padding:10px 12px;
+    line-height:1.5;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    background: var(--surface-2);
+    border:1px solid var(--line);
+    border-left:3px solid var(--ok);
+    color:var(--text);
+    padding:12px 18px;
+    border-radius:8px;
+    font-size:13px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events:none;
+    z-index:30;
+    max-width:320px;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast.danger{ border-left-color: var(--danger); }
+
+  .confirm-overlay{
+    position:fixed; inset:0;
+    background: rgba(10,9,11,0.65);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:40;
+  }
+  .confirm-overlay.open{ display:flex; }
+  .confirm-box{
+    background: var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:24px;
+    width:320px;
+  }
+  .confirm-box h3{ margin:0 0 8px; font-size:16px; }
+  .confirm-box p{ margin:0 0 20px; font-size:13px; color:var(--text-dim); line-height:1.5; }
+  .confirm-actions{ display:flex; gap:10px; justify-content:flex-end; }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand display">CARTELERA<small>PANEL ADMINISTRADOR</small></div>
+    <nav>
+      <a class="nav-link active" data-view="peliculas" onclick="switchView('peliculas')"><span class="nav-icon">▤</span> Películas</a>
+      <a class="nav-link" data-view="funciones" onclick="switchView('funciones')"><span class="nav-icon">▦</span> Funciones</a>
+      <a class="nav-link" data-view="salas" onclick="switchView('salas')"><span class="nav-icon">▥</span> Salas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>J. Quispe</strong>
+      Rol: Administrador
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ===================== PELÍCULAS ===================== -->
+    <section class="view-section active" data-view="peliculas">
+      <div class="top-row">
+        <div>
+          <h1 class="display">GESTIÓN DE PELÍCULAS</h1>
+          <p class="subtitle">Alta, edición y estado de cartelera</p>
+        </div>
+        <button class="btn btn-primary" onclick="openMoviePanel()">+ Nueva película</button>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="movieSearchInput" placeholder="Buscar por nombre..." oninput="renderMoviesTable()">
+        <select id="movieStatusFilter" onchange="renderMoviesTable()">
+          <option value="">Todos los estados</option>
+          <option value="estreno">En estreno</option>
+          <option value="cartelera">En cartelera</option>
+          <option value="proximamente">Próximamente</option>
+        </select>
+        <select id="movieFormatFilter" onchange="renderMoviesTable()">
+          <option value="">Todos los formatos</option>
+          <option value="2D">2D</option>
+          <option value="3D">3D</option>
+          <option value="4DX">4DX</option>
+          <option value="IMAX">IMAX</option>
+        </select>
+      </div>
+
+      <table id="movieTable">
+        <thead>
+          <tr>
+            <th>Película</th><th>Género</th><th>Duración</th><th>Precio base</th>
+            <th>Estado</th><th>Actualizado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="movieTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="movieEmptyState" style="display:none;">No se encontraron películas con esos filtros.</div>
+    </section>
+
+    <!-- ===================== FUNCIONES ===================== -->
+    <section class="view-section" data-view="funciones">
+      <div class="top-row">
+        <div>
+          <h1 class="display">GESTIÓN DE FUNCIONES</h1>
+          <p class="subtitle">Programación de horarios por sala</p>
+        </div>
+        <button class="btn btn-primary" onclick="openShowtimePanel()">+ Nueva función</button>
+      </div>
+
+      <div class="filters">
+        <select id="funcionMovieFilter" onchange="renderShowtimesTable()"></select>
+        <select id="funcionRoomFilter" onchange="renderShowtimesTable()"></select>
+        <select id="funcionStatusFilter" onchange="renderShowtimesTable()">
+          <option value="">Todos los estados</option>
+          <option value="programada">Programada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+
+      <table id="showtimeTable">
+        <thead>
+          <tr>
+            <th>Película</th><th>Sala</th><th>Fecha</th><th>Hora</th>
+            <th>Formato</th><th>Precio</th><th>Estado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="showtimeTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="showtimeEmptyState" style="display:none;">No hay funciones programadas con esos filtros.</div>
+    </section>
+
+    <!-- ===================== SALAS ===================== -->
+    <section class="view-section" data-view="salas">
+      <div class="top-row">
+        <div>
+          <h1 class="display">GESTIÓN DE SALAS</h1>
+          <p class="subtitle">Capacidad y formato de cada sala</p>
+        </div>
+        <button class="btn btn-primary" onclick="openRoomPanel()">+ Nueva sala</button>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="roomSearchInput" placeholder="Buscar por nombre..." oninput="renderRoomsTable()">
+        <select id="roomFormatFilter" onchange="renderRoomsTable()">
+          <option value="">Todos los formatos</option>
+          <option value="2D">2D</option>
+          <option value="3D">3D</option>
+          <option value="4DX">4DX</option>
+          <option value="IMAX">IMAX</option>
+        </select>
+        <select id="roomStatusFilter" onchange="renderRoomsTable()">
+          <option value="">Todos los estados</option>
+          <option value="activa">Activa</option>
+          <option value="mantenimiento">Mantenimiento</option>
+        </select>
+      </div>
+
+      <table id="roomTable">
+        <thead>
+          <tr><th>Sala</th><th>Capacidad</th><th>Formato</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody id="roomTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="roomEmptyState" style="display:none;">No se encontraron salas con esos filtros.</div>
+    </section>
+
+  </main>
+
+  <div class="overlay" id="overlay" onclick="closePanel()"></div>
+
+  <!-- ===================== PANEL PELÍCULA ===================== -->
+  <div class="panel" id="panelMovie">
+    <div class="panel-header">
+      <h2 id="movieTitle">Nueva película</h2>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label>Afiche de la película</label>
+        <div class="upload-box" id="uploadBox">
+          <input type="file" accept="image/*" id="posterInput" onchange="previewImage(event)">
+          <div id="uploadPlaceholder">
+            <div class="upload-icon">🎬</div>
+            <div class="upload-text"><strong>Sube un afiche</strong> o arrástralo aquí</div>
+            <div class="upload-hint">JPG o PNG · vertical 2:3 recomendado · máx. 5MB</div>
+          </div>
+          <img id="posterPreview" style="display:none;">
+        </div>
+        <button type="button" class="remove-image" id="removeImageBtn" onclick="removeImage(event)">Quitar imagen</button>
+      </div>
+
+      <div class="field" id="field-name">
+        <label>Nombre de la película</label>
+        <input type="text" id="input-name" placeholder="Ej. La Ciudad Silenciosa">
+        <div class="error-msg">Ingresa el nombre de la película.</div>
+      </div>
+
+      <div class="field">
+        <label>Sinopsis</label>
+        <textarea id="input-synopsis" placeholder="Breve descripción de la película..."></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Género</label>
+          <select id="input-genre">
+            <option>Acción</option><option>Drama</option><option>Suspenso</option>
+            <option>Comedia</option><option>Ciencia ficción</option><option>Animación</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Clasificación</label>
+          <select id="input-rating">
+            <option>Apta para todos</option><option>Clasificación 14</option><option>Clasificación 18</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="field-duration">
+          <label>Duración (min)</label>
+          <input type="number" id="input-duration" placeholder="118" min="1">
+          <div class="error-msg">Ingresa una duración válida.</div>
+        </div>
+        <div class="field" id="field-price">
+          <label>Precio base</label>
+          <div class="price-input">
+            <span>S/</span>
+            <input type="number" id="input-price" placeholder="18.00" step="0.10" min="0">
+          </div>
+          <div class="error-msg">Ingresa un precio válido.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Formato disponible</label>
+        <select id="input-format">
+          <option>2D</option><option>3D</option><option>4DX</option><option>IMAX</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Estado de cartelera</label>
+        <div class="status-toggle">
+          <div class="status-option selected estreno" data-status="estreno" onclick="selectStatusGeneric(this)">En estreno</div>
+          <div class="status-option ok" data-status="cartelera" onclick="selectStatusGeneric(this)">En cartelera</div>
+          <div class="status-option proximamente" data-status="proximamente" onclick="selectStatusGeneric(this)">Próximamente</div>
+        </div>
+      </div>
+
+      <div class="audit-note" id="auditNote">
+        Registrado por: J. Quispe (DNI 40551223) · Creado: — · Última actualización: —
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-ghost" onclick="closePanel()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveMovie()">Guardar película</button>
+    </div>
+  </div>
+
+  <!-- ===================== PANEL FUNCIÓN ===================== -->
+  <div class="panel" id="panelShowtime">
+    <div class="panel-header">
+      <h2 id="showtimeTitle">Nueva función</h2>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="field" id="field-funcion-movie">
+        <label>Película</label>
+        <select id="input-funcion-movie"></select>
+        <div class="error-msg">Registra al menos una película primero.</div>
+      </div>
+      <div class="field" id="field-funcion-room">
+        <label>Sala</label>
+        <select id="input-funcion-room"></select>
+        <div class="error-msg">Registra al menos una sala primero.</div>
+      </div>
+      <div class="field-row">
+        <div class="field" id="field-funcion-date">
+          <label>Fecha</label>
+          <input type="date" id="input-funcion-date">
+          <div class="error-msg">Selecciona una fecha.</div>
+        </div>
+        <div class="field" id="field-funcion-time">
+          <label>Hora</label>
+          <input type="time" id="input-funcion-time">
+          <div class="error-msg">Selecciona una hora.</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Formato</label>
+          <select id="input-funcion-format">
+            <option>2D</option><option>3D</option><option>4DX</option><option>IMAX</option>
+          </select>
+        </div>
+        <div class="field" id="field-funcion-price">
+          <label>Precio de la función</label>
+          <div class="price-input">
+            <span>S/</span>
+            <input type="number" id="input-funcion-price" step="0.10" min="0">
+          </div>
+          <div class="error-msg">Ingresa un precio válido.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <div class="status-toggle">
+          <div class="status-option selected ok" data-status="programada" onclick="selectStatusGeneric(this)">Programada</div>
+          <div class="status-option bad" data-status="cancelada" onclick="selectStatusGeneric(this)">Cancelada</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-ghost" onclick="closePanel()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveShowtime()">Guardar función</button>
+    </div>
+  </div>
+
+  <!-- ===================== PANEL SALA ===================== -->
+  <div class="panel" id="panelRoom">
+    <div class="panel-header">
+      <h2 id="roomTitle">Nueva sala</h2>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="field" id="field-room-name">
+        <label>Nombre de la sala</label>
+        <input type="text" id="input-room-name" placeholder="Ej. Sala 4 - VIP">
+        <div class="error-msg">Ingresa el nombre de la sala.</div>
+      </div>
+      <div class="field-row">
+        <div class="field" id="field-room-capacity">
+          <label>Capacidad (asientos)</label>
+          <input type="number" id="input-room-capacity" min="1" placeholder="90">
+          <div class="error-msg">Ingresa una capacidad válida.</div>
+        </div>
+        <div class="field">
+          <label>Formato</label>
+          <select id="input-room-format">
+            <option>2D</option><option>3D</option><option>4DX</option><option>IMAX</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <div class="status-toggle">
+          <div class="status-option selected ok" data-status="activa" onclick="selectStatusGeneric(this)">Activa</div>
+          <div class="status-option bad" data-status="mantenimiento" onclick="selectStatusGeneric(this)">Mantenimiento</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-ghost" onclick="closePanel()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveRoom()">Guardar sala</button>
+    </div>
+  </div>
+
+  <!-- ===================== CONFIRMACIÓN ===================== -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h3>Eliminar registro</h3>
+      <p id="confirmText">¿Seguro que deseas eliminar este elemento? Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ========================= ESTADO =========================
+  let movies = [
+    { id:1, name:"La Ciudad Silenciosa", synopsis:"Un detective persigue un caso que nadie más quiere tocar.",
+      genre:"Suspenso", rating:"Clasificación 14", duration:118, price:18.00, format:"2D",
+      status:"estreno", poster:null, createdAt:"10 sep, 2026", updatedAt:"10 sep, 2026" },
+    { id:2, name:"Vientos del Sur", synopsis:"Una familia reconstruye su historia en la sierra sur del Perú.",
+      genre:"Drama", rating:"Apta para todos", duration:102, price:16.00, format:"2D",
+      status:"cartelera", poster:null, createdAt:"2 sep, 2026", updatedAt:"2 sep, 2026" },
+    { id:3, name:"Cráter", synopsis:"Un equipo científico enfrenta lo desconocido bajo la superficie.",
+      genre:"Ciencia ficción", rating:"Clasificación 18", duration:134, price:20.00, format:"3D",
+      status:"proximamente", poster:null, createdAt:"28 ago, 2026", updatedAt:"28 ago, 2026" }
+  ];
+  let nextMovieId = 4;
+
+  let rooms = [
+    { id:1, name:"Sala Dorada", capacity:120, format:"2D", status:"activa" },
+    { id:2, name:"Sala Plata", capacity:90, format:"3D", status:"activa" },
+    { id:3, name:"Sala VIP 4DX", capacity:40, format:"4DX", status:"mantenimiento" }
+  ];
+  let nextRoomId = 4;
+
+  let showtimes = [
+    { id:1, movieId:1, roomId:1, date:"2026-09-13", time:"19:30", format:"2D", price:18.00, status:"programada" },
+    { id:2, movieId:2, roomId:2, date:"2026-09-13", time:"17:00", format:"3D", price:16.00, status:"programada" },
+    { id:3, movieId:1, roomId:3, date:"2026-09-14", time:"21:00", format:"4DX", price:25.00, status:"cancelada" }
+  ];
+  let nextShowtimeId = 4;
+
+  let editingMovieId = null;
+  let editingRoomId = null;
+  let editingShowtimeId = null;
+  let pendingDelete = null;
+  let currentPosterData = null;
+
+  const statusLabels = {
+    estreno:"En estreno", cartelera:"En cartelera", proximamente:"Próximamente",
+    activa:"Activa", mantenimiento:"Mantenimiento",
+    programada:"Programada", cancelada:"Cancelada"
+  };
+
+  function todayLabel(){
+    return new Date().toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }).replace('.', '');
+  }
+  function formatDateLabel(dateStr){
+    if(!dateStr) return '—';
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('es-PE', { day:'numeric', month:'short', year:'numeric' }).replace('.', '');
+  }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : str;
+    return div.innerHTML;
+  }
+
+  // ========================= NAVEGACIÓN =========================
+  function switchView(view){
+    document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.view === view));
+    document.querySelectorAll('.view-section').forEach(s => s.classList.toggle('active', s.dataset.view === view));
+  }
+
+  // ========================= TOGGLE DE ESTADO GENÉRICO =========================
+  function selectStatusGeneric(el){
+    const group = el.closest('.status-toggle');
+    group.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function selectStatusByValue(panelEl, status){
+    panelEl.querySelectorAll('.status-option').forEach(o => o.classList.toggle('selected', o.dataset.status === status));
+  }
+  function getSelectedStatus(panelEl){
+    const el = panelEl.querySelector('.status-option.selected');
+    return el ? el.dataset.status : null;
+  }
+
+  // ========================= PANEL GENÉRICO =========================
+  function closePanel(){
+    document.getElementById('panelMovie').classList.remove('open');
+    document.getElementById('panelShowtime').classList.remove('open');
+    document.getElementById('panelRoom').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+  function clearValidation(panelEl){
+    panelEl.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+  }
+
+  // ========================= PELÍCULAS =========================
+  function renderMoviesTable(){
+    const search = document.getElementById('movieSearchInput').value.trim().toLowerCase();
+    const statusF = document.getElementById('movieStatusFilter').value;
+    const formatF = document.getElementById('movieFormatFilter').value;
+
+    const filtered = movies.filter(m =>
+      m.name.toLowerCase().includes(search) &&
+      (!statusF || m.status === statusF) &&
+      (!formatF || m.format === formatF)
+    );
+
+    const tbody = document.getElementById('movieTableBody');
+    const table = document.getElementById('movieTable');
+    const empty = document.getElementById('movieEmptyState');
+
+    if(filtered.length === 0){ table.style.display='none'; empty.style.display='block'; return; }
+    table.style.display='table'; empty.style.display='none';
+
+    tbody.innerHTML = filtered.map(m => `
+      <tr>
+        <td>
+          <div class="movie-cell">
+            ${m.poster ? `<img class="poster-thumb" src="${m.poster}">` : `<div class="poster-thumb"></div>`}
+            <div>
+              <div class="movie-name">${escapeHtml(m.name)}</div>
+              <div class="movie-meta">${escapeHtml(m.rating)}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(m.genre)}</td>
+        <td>${m.duration} min</td>
+        <td>S/ ${Number(m.price).toFixed(2)}</td>
+        <td><span class="tag tag-${m.status}">${statusLabels[m.status]}</span></td>
+        <td>${m.updatedAt}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" onclick="openMoviePanel(${m.id})" title="Editar">✎</button>
+            <button class="icon-btn danger" onclick="askDelete('pelicula', ${m.id})" title="Eliminar">✕</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openMoviePanel(id){
+    editingMovieId = id || null;
+    currentPosterData = null;
+    const panel = document.getElementById('panelMovie');
+    clearValidation(panel);
+
+    if(editingMovieId){
+      const m = movies.find(x => x.id === editingMovieId);
+      document.getElementById('movieTitle').textContent = "Editar película";
+      document.getElementById('input-name').value = m.name;
+      document.getElementById('input-synopsis').value = m.synopsis || '';
+      document.getElementById('input-genre').value = m.genre;
+      document.getElementById('input-rating').value = m.rating;
+      document.getElementById('input-duration').value = m.duration;
+      document.getElementById('input-price').value = m.price;
+      document.getElementById('input-format').value = m.format;
+      selectStatusByValue(panel, m.status);
+      currentPosterData = m.poster;
+      m.poster ? showPosterPreview(m.poster) : clearPosterPreview();
+      document.getElementById('auditNote').textContent =
+        `Registrado por: J. Quispe (DNI 40551223) · Creado: ${m.createdAt} · Última actualización: ${m.updatedAt}`;
+    } else {
+      document.getElementById('movieTitle').textContent = "Nueva película";
+      document.getElementById('input-name').value = '';
+      document.getElementById('input-synopsis').value = '';
+      document.getElementById('input-genre').selectedIndex = 0;
+      document.getElementById('input-rating').selectedIndex = 0;
+      document.getElementById('input-duration').value = '';
+      document.getElementById('input-price').value = '';
+      document.getElementById('input-format').selectedIndex = 0;
+      selectStatusByValue(panel, 'estreno');
+      clearPosterPreview();
+      document.getElementById('auditNote').textContent =
+        'Registrado por: J. Quispe (DNI 40551223) · Creado: — · Última actualización: —';
+    }
+
+    document.getElementById('posterInput').value = '';
+    closePanel();
+    panel.classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function previewImage(event){
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { currentPosterData = e.target.result; showPosterPreview(currentPosterData); };
+    reader.readAsDataURL(file);
+  }
+  function showPosterPreview(dataUrl){
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+    const img = document.getElementById('posterPreview');
+    img.src = dataUrl; img.style.display = 'block';
+    document.getElementById('uploadBox').classList.add('has-image');
+    document.getElementById('removeImageBtn').classList.add('show');
+  }
+  function clearPosterPreview(){
+    currentPosterData = null;
+    document.getElementById('uploadPlaceholder').style.display = 'block';
+    const img = document.getElementById('posterPreview');
+    img.src = ''; img.style.display = 'none';
+    document.getElementById('uploadBox').classList.remove('has-image');
+    document.getElementById('removeImageBtn').classList.remove('show');
+  }
+  function removeImage(e){ e.stopPropagation(); clearPosterPreview(); document.getElementById('posterInput').value=''; }
+
+  function saveMovie(){
+    const panel = document.getElementById('panelMovie');
+    clearValidation(panel);
+    const name = document.getElementById('input-name').value.trim();
+    const duration = document.getElementById('input-duration').value;
+    const price = document.getElementById('input-price').value;
+
+    let valid = true;
+    if(!name){ document.getElementById('field-name').classList.add('invalid'); valid = false; }
+    if(!duration || Number(duration) <= 0){ document.getElementById('field-duration').classList.add('invalid'); valid = false; }
+    if(price === '' || Number(price) < 0){ document.getElementById('field-price').classList.add('invalid'); valid = false; }
+    if(!valid){ showToast('Revisa los campos marcados en rojo.', true); return; }
+
+    const data = {
+      name, synopsis: document.getElementById('input-synopsis').value.trim(),
+      genre: document.getElementById('input-genre').value,
+      rating: document.getElementById('input-rating').value,
+      duration: Number(duration), price: Number(price),
+      format: document.getElementById('input-format').value,
+      status: getSelectedStatus(panel), poster: currentPosterData
+    };
+
+    if(editingMovieId){
+      const m = movies.find(x => x.id === editingMovieId);
+      Object.assign(m, data);
+      m.updatedAt = todayLabel();
+      showToast(`"${name}" se actualizó correctamente.`);
+    } else {
+      movies.unshift({ id: nextMovieId++, ...data, createdAt: todayLabel(), updatedAt: todayLabel() });
+      showToast(`"${name}" se agregó a la cartelera.`);
+    }
+    closePanel();
+    refreshAll();
+  }
+
+  // ========================= SALAS =========================
+  function renderRoomsTable(){
+    const search = document.getElementById('roomSearchInput').value.trim().toLowerCase();
+    const formatF = document.getElementById('roomFormatFilter').value;
+    const statusF = document.getElementById('roomStatusFilter').value;
+
+    const filtered = rooms.filter(r =>
+      r.name.toLowerCase().includes(search) &&
+      (!formatF || r.format === formatF) &&
+      (!statusF || r.status === statusF)
+    );
+
+    const tbody = document.getElementById('roomTableBody');
+    const table = document.getElementById('roomTable');
+    const empty = document.getElementById('roomEmptyState');
+
+    if(filtered.length === 0){ table.style.display='none'; empty.style.display='block'; return; }
+    table.style.display='table'; empty.style.display='none';
+
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td class="movie-name">${escapeHtml(r.name)}</td>
+        <td>${r.capacity} asientos</td>
+        <td>${r.format}</td>
+        <td><span class="tag tag-${r.status}">${statusLabels[r.status]}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" onclick="openRoomPanel(${r.id})" title="Editar">✎</button>
+            <button class="icon-btn danger" onclick="askDelete('sala', ${r.id})" title="Eliminar">✕</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openRoomPanel(id){
+    editingRoomId = id || null;
+    const panel = document.getElementById('panelRoom');
+    clearValidation(panel);
+
+    if(editingRoomId){
+      const r = rooms.find(x => x.id === editingRoomId);
+      document.getElementById('roomTitle').textContent = "Editar sala";
+      document.getElementById('input-room-name').value = r.name;
+      document.getElementById('input-room-capacity').value = r.capacity;
+      document.getElementById('input-room-format').value = r.format;
+      selectStatusByValue(panel, r.status);
+    } else {
+      document.getElementById('roomTitle').textContent = "Nueva sala";
+      document.getElementById('input-room-name').value = '';
+      document.getElementById('input-room-capacity').value = '';
+      document.getElementById('input-room-format').selectedIndex = 0;
+      selectStatusByValue(panel, 'activa');
+    }
+
+    closePanel();
+    panel.classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function saveRoom(){
+    const panel = document.getElementById('panelRoom');
+    clearValidation(panel);
+    const name = document.getElementById('input-room-name').value.trim();
+    const capacity = document.getElementById('input-room-capacity').value;
+
+    let valid = true;
+    if(!name){ document.getElementById('field-room-name').classList.add('invalid'); valid = false; }
+    if(!capacity || Number(capacity) <= 0){ document.getElementById('field-room-capacity').classList.add('invalid'); valid = false; }
+    if(!valid){ showToast('Revisa los campos marcados en rojo.', true); return; }
+
+    const data = {
+      name, capacity: Number(capacity),
+      format: document.getElementById('input-room-format').value,
+      status: getSelectedStatus(panel)
+    };
+
+    if(editingRoomId){
+      Object.assign(rooms.find(x => x.id === editingRoomId), data);
+      showToast(`Sala "${name}" se actualizó correctamente.`);
+    } else {
+      rooms.unshift({ id: nextRoomId++, ...data });
+      showToast(`Sala "${name}" fue creada.`);
+    }
+    closePanel();
+    refreshAll();
+  }
+
+  // ========================= FUNCIONES =========================
+  function populateFuncionFilters(){
+    const movieSel = document.getElementById('funcionMovieFilter');
+    const currentMovie = movieSel.value;
+    movieSel.innerHTML = '<option value="">Todas las películas</option>' +
+      movies.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+    movieSel.value = currentMovie;
+
+    const roomSel = document.getElementById('funcionRoomFilter');
+    const currentRoom = roomSel.value;
+    roomSel.innerHTML = '<option value="">Todas las salas</option>' +
+      rooms.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('');
+    roomSel.value = currentRoom;
+  }
+
+  function renderShowtimesTable(){
+    populateFuncionFilters();
+    const movieF = document.getElementById('funcionMovieFilter').value;
+    const roomF = document.getElementById('funcionRoomFilter').value;
+    const statusF = document.getElementById('funcionStatusFilter').value;
+
+    const filtered = showtimes.filter(s =>
+      (!movieF || String(s.movieId) === movieF) &&
+      (!roomF || String(s.roomId) === roomF) &&
+      (!statusF || s.status === statusF)
+    ).slice().sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+    const tbody = document.getElementById('showtimeTableBody');
+    const table = document.getElementById('showtimeTable');
+    const empty = document.getElementById('showtimeEmptyState');
+
+    if(filtered.length === 0){ table.style.display='none'; empty.style.display='block'; return; }
+    table.style.display='table'; empty.style.display='none';
+
+    tbody.innerHTML = filtered.map(s => {
+      const movie = movies.find(m => m.id === s.movieId);
+      const room = rooms.find(r => r.id === s.roomId);
+      return `
+      <tr>
+        <td class="movie-name">${movie ? escapeHtml(movie.name) : '— (eliminada)'}</td>
+        <td>${room ? escapeHtml(room.name) : '— (eliminada)'}</td>
+        <td>${formatDateLabel(s.date)}</td>
+        <td>${s.time || '—'}</td>
+        <td>${s.format}</td>
+        <td>S/ ${Number(s.price).toFixed(2)}</td>
+        <td><span class="tag tag-${s.status}">${statusLabels[s.status]}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" onclick="openShowtimePanel(${s.id})" title="Editar">✎</button>
+            <button class="icon-btn danger" onclick="askDelete('funcion', ${s.id})" title="Eliminar">✕</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function populateShowtimeFormSelects(selectedMovieId, selectedRoomId){
+    const movieSel = document.getElementById('input-funcion-movie');
+    movieSel.innerHTML = movies.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+    if(selectedMovieId) movieSel.value = selectedMovieId;
+
+    const roomSel = document.getElementById('input-funcion-room');
+    roomSel.innerHTML = rooms.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('');
+    if(selectedRoomId) roomSel.value = selectedRoomId;
+  }
+
+  function openShowtimePanel(id){
+    if(movies.length === 0){ showToast('Registra al menos una película antes de crear una función.', true); return; }
+    if(rooms.length === 0){ showToast('Registra al menos una sala antes de crear una función.', true); return; }
+
+    editingShowtimeId = id || null;
+    const panel = document.getElementById('panelShowtime');
+    clearValidation(panel);
+
+    if(editingShowtimeId){
+      const s = showtimes.find(x => x.id === editingShowtimeId);
+      document.getElementById('showtimeTitle').textContent = "Editar función";
+      populateShowtimeFormSelects(s.movieId, s.roomId);
+      document.getElementById('input-funcion-date').value = s.date;
+      document.getElementById('input-funcion-time').value = s.time;
+      document.getElementById('input-funcion-format').value = s.format;
+      document.getElementById('input-funcion-price').value = s.price;
+      selectStatusByValue(panel, s.status);
+    } else {
+      document.getElementById('showtimeTitle').textContent = "Nueva función";
+      populateShowtimeFormSelects();
+      document.getElementById('input-funcion-date').value = '';
+      document.getElementById('input-funcion-time').value = '';
+      document.getElementById('input-funcion-format').value = movies[0].format;
+      document.getElementById('input-funcion-price').value = movies[0].price;
+      selectStatusByValue(panel, 'programada');
+    }
+
+    closePanel();
+    panel.classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  // Autocompletar precio/formato al cambiar película o sala
+  // (el script se ejecuta al final del <body>, así que el DOM ya existe)
+  document.getElementById('input-funcion-movie').addEventListener('change', function(){
+    const movie = movies.find(m => m.id === Number(this.value));
+    if(movie) document.getElementById('input-funcion-price').value = movie.price;
+  });
+  document.getElementById('input-funcion-room').addEventListener('change', function(){
+    const room = rooms.find(r => r.id === Number(this.value));
+    if(room) document.getElementById('input-funcion-format').value = room.format;
+  });
+
+  function saveShowtime(){
+    const panel = document.getElementById('panelShowtime');
+    clearValidation(panel);
+    const date = document.getElementById('input-funcion-date').value;
+    const time = document.getElementById('input-funcion-time').value;
+    const price = document.getElementById('input-funcion-price').value;
+
+    let valid = true;
+    if(!date){ document.getElementById('field-funcion-date').classList.add('invalid'); valid = false; }
+    if(!time){ document.getElementById('field-funcion-time').classList.add('invalid'); valid = false; }
+    if(price === '' || Number(price) < 0){ document.getElementById('field-funcion-price').classList.add('invalid'); valid = false; }
+    if(!valid){ showToast('Revisa los campos marcados en rojo.', true); return; }
+
+    const data = {
+      movieId: Number(document.getElementById('input-funcion-movie').value),
+      roomId: Number(document.getElementById('input-funcion-room').value),
+      date, time,
+      format: document.getElementById('input-funcion-format').value,
+      price: Number(price),
+      status: getSelectedStatus(panel)
+    };
+
+    if(editingShowtimeId){
+      Object.assign(showtimes.find(x => x.id === editingShowtimeId), data);
+      showToast('La función se actualizó correctamente.');
+    } else {
+      showtimes.unshift({ id: nextShowtimeId++, ...data });
+      showToast('La función fue creada.');
+    }
+    closePanel();
+    refreshAll();
+  }
+
+  // ========================= ELIMINAR (genérico) =========================
+  function askDelete(type, id){
+    pendingDelete = { type, id };
+    let name = '';
+    if(type === 'pelicula') name = movies.find(m => m.id === id)?.name || '';
+    if(type === 'sala') name = rooms.find(r => r.id === id)?.name || '';
+    if(type === 'funcion'){
+      const s = showtimes.find(x => x.id === id);
+      const movie = movies.find(m => m.id === s.movieId);
+      name = `${movie ? movie.name : 'función'} · ${formatDateLabel(s.date)} ${s.time}`;
+    }
+    document.getElementById('confirmText').textContent =
+      `¿Seguro que deseas eliminar "${name}"? Esta acción no se puede deshacer.`;
+    document.getElementById('confirmOverlay').classList.add('open');
+  }
+  function closeConfirm(){
+    pendingDelete = null;
+    document.getElementById('confirmOverlay').classList.remove('open');
+  }
+  function confirmDelete(){
+    if(!pendingDelete) return;
+    const { type, id } = pendingDelete;
+
+    if(type === 'pelicula'){
+      if(showtimes.some(s => s.movieId === id)){
+        closeConfirm();
+        showToast('No se puede eliminar: esta película tiene funciones programadas.', true);
+        return;
+      }
+      const m = movies.find(x => x.id === id);
+      movies = movies.filter(x => x.id !== id);
+      closeConfirm(); refreshAll();
+      showToast(`"${m.name}" fue eliminada.`, true);
+
+    } else if(type === 'sala'){
+      if(showtimes.some(s => s.roomId === id)){
+        closeConfirm();
+        showToast('No se puede eliminar: esta sala tiene funciones programadas.', true);
+        return;
+      }
+      const r = rooms.find(x => x.id === id);
+      rooms = rooms.filter(x => x.id !== id);
+      closeConfirm(); refreshAll();
+      showToast(`Sala "${r.name}" fue eliminada.`, true);
+
+    } else if(type === 'funcion'){
+      showtimes = showtimes.filter(x => x.id !== id);
+      closeConfirm(); refreshAll();
+      showToast('La función fue eliminada.', true);
+    }
+  }
+
+  // ========================= TOAST =========================
+  let toastTimer = null;
+  function showToast(message, isDanger){
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.toggle('danger', !!isDanger);
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ========================= INIT =========================
+  function refreshAll(){
+    renderMoviesTable();
+    renderRoomsTable();
+    renderShowtimesTable();
+  }
+  refreshAll();
+</script>
+
+</body>
+</html>
