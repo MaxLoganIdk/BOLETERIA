@@ -1,0 +1,174 @@
+/* ==========================================================
+   ESTILOS GENERALES - CINE EL CHAPLIN
+   Un solo archivo para todo el sitio.
+   ========================================================== */
+
+/* 1. COLORES (si cambias uno aquí, cambia en todas las páginas) */
+:root {
+    --fondo: #14100e;
+    --tarjeta: #1f1a16;
+    --borde: #362d24;
+    --texto: #f2ead6;
+    --tenue: #b9ab95;
+    --dorado: #d4a537;
+    --dorado-osc: #a5791f;
+    --rojo: #7c1f27;
+    --radio: 6px;
+}
+
+/* 2. BASE: cuerpo, títulos, textos y enlaces */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+h1, h2, h3 { margin: 0 0 .5rem; color: var(--dorado); letter-spacing: .04em; }
+h1, h2 { text-transform: uppercase; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.05rem; color: var(--texto); }
+p  { margin: .3rem 0 1rem; color: var(--tenue); }
+a  { color: var(--dorado); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 3. ESTRUCTURA: barra superior, contenedor central y pie */
+.barra {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: .5rem 1.5rem;
+    padding: .9rem 2rem;
+    background: var(--tarjeta);
+    border-bottom: 2px solid var(--rojo);
+}
+.logo { font-size: 1.4rem; font-weight: 700; letter-spacing: .15em; }
+.barra nav a { margin-left: 1.2rem; color: var(--texto); font-size: .95rem; }
+.barra nav a:hover { color: var(--dorado); text-decoration: none; }
+
+.contenedor { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+.centrado   { text-align: center; }
+.pie {
+    padding: 1.5rem; text-align: center; font-size: .85rem;
+    color: var(--tenue); border-top: 1px solid var(--borde);
+}
+
+/* 4. TARJETAS Y REJILLAS */
+.tarjeta {
+    background: var(--tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+}
+.estrecho { max-width: 420px; margin: 2rem auto; }   /* tarjeta angosta y centrada */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; align-items: start; }
+.datos p { margin: .2rem 0; color: var(--texto); }
+.datos strong { color: var(--dorado); }
+.aviso { background: var(--rojo); margin-top: 2.5rem; }
+.aviso h2 { color: var(--texto); }
+.aviso p { color: #e7d3d3; }
+
+/* 5. BOTONES */
+button, .boton {
+    display: inline-block; padding: .55rem 1.3rem;
+    font: inherit; font-size: .9rem; font-weight: 600;
+    color: var(--dorado); background: transparent;
+    border: 1px solid var(--dorado-osc); border-radius: var(--radio);
+    cursor: pointer; text-decoration: none !important;
+}
+button:hover, .boton:hover { background: var(--dorado); color: #1a1410; }
+.primario { background: var(--dorado); color: #1a1410; }
+.primario:hover { background: var(--dorado-osc); color: var(--texto); }
+.completo { display: block; width: 100%; text-align: center; }
+.acciones { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+
+/* 6. FORMULARIOS */
+label { display: block; margin-bottom: 1rem; text-align: left; font-size: .9rem; font-weight: 600; }
+input, select, textarea {
+    display: block; width: 100%; margin-top: .3rem; padding: .6rem .8rem;
+    font: inherit; font-weight: 400; color: var(--texto);
+    background: var(--fondo); border: 1px solid var(--borde); border-radius: var(--radio);
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--dorado); }
+textarea { min-height: 110px; resize: vertical; }
+
+/* 7. TABLAS */
+table { width: 100%; border-collapse: collapse; background: var(--tarjeta); }
+th, td { padding: .75rem 1rem; text-align: left; border-bottom: 1px solid var(--borde); }
+th { color: var(--dorado); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+td button { padding: .3rem .8rem; font-size: .8rem; }
+td input { width: 80px; margin: 0; }
+
+/* 8. PÁGINA PRINCIPAL: banner y carteles de películas */
+.banner { position: relative; height: 340px; }
+.banner img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.banner div {
+    position: absolute; inset: 0; padding: 1rem;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+    background: linear-gradient(rgba(20,16,14,.55), rgba(20,16,14,.85));
+}
+.banner h1 { font-size: 2.6rem; color: var(--texto); }
+.banner p  { color: var(--texto); }
+
+.pelicula { text-align: center; }
+.pelicula img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: var(--radio); margin-bottom: .75rem; }
+
+/* 9. PÁGINA DE FUNCIONES: detalle de la película y horarios */
+.detalle { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; margin-top: 1rem; }
+.detalle img { width: 100%; border-radius: var(--radio); }
+.etiqueta {
+    display: inline-block; margin-right: .4rem; padding: .1rem .7rem;
+    font-size: .8rem; color: var(--dorado);
+    border: 1px solid var(--dorado-osc); border-radius: 20px;
+}
+.dia { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding: .6rem 0; border-bottom: 1px solid var(--borde); }
+.dia h3 { width: 230px; margin: 0; }
+
+/* 10. SALAS: pantalla y butacas */
+.pantalla {
+    width: 70%; margin: 0 auto 2rem; padding: .4rem;
+    text-align: center; font-size: .8rem; letter-spacing: .4em;
+    color: var(--fondo); background: var(--tenue); border-radius: var(--radio);
+    box-shadow: 0 8px 25px rgba(212, 165, 55, .25);
+}
+.fila { display: flex; justify-content: center; gap: .5rem; margin-bottom: .5rem; }
+.asiento { margin: 0; }
+.asiento input { display: none; }
+.asiento span {
+    display: block; width: 2.6rem; padding: .4rem 0;
+    text-align: center; font-size: .8rem; cursor: pointer;
+    background: var(--fondo); border: 1px solid var(--borde); border-radius: 6px 6px 2px 2px;
+}
+.asiento input:checked + span  { background: var(--dorado); color: #1a1410; }
+.asiento input:disabled + span { background: var(--rojo); opacity: .5; cursor: not-allowed; }
+.cuadro { display: inline-block; width: .9rem; height: .9rem; margin: 0 .3rem 0 1rem; vertical-align: middle;
+          background: var(--fondo); border: 1px solid var(--borde); border-radius: 3px; }
+.cuadro.sel { background: var(--dorado); }
+.cuadro.ocu { background: var(--rojo); opacity: .5; }
+
+/* 11. BOLETO */
+.ticket {
+    max-width: 420px; margin: 1rem auto; padding: 1.5rem;
+    background: var(--tarjeta);
+    border: 2px dashed var(--dorado-osc); border-left: 8px solid var(--rojo);
+    border-radius: var(--radio);
+}
+
+/* 12. LOGIN: fondo con la foto de la sala */
+.fondo-login {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    background: linear-gradient(rgba(20,16,14,.85), rgba(20,16,14,.9)) , url('../imagenes/publicidad.png') center / cover;
+}
+
+/* 13. CELULAR */
+@media (max-width: 700px) {
+    .detalle { grid-template-columns: 1fr; }
+    .dia h3 { width: 100%; }
+    .banner h1 { font-size: 1.8rem; }
+    .barra { justify-content: center; }
+    .barra nav a { margin: 0 .6rem; }
+}
