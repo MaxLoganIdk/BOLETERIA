@@ -19,6 +19,17 @@ La base H2 se crea en `data/boleteria`. La consola está en `http://localhost:80
 - Panel administrador con métricas, registro de películas y programación de funciones; también lista pedidos y consultas.
 - Formulario de consultas/sugerencias.
 
+## Organización por capas
+
+- Paquetes de dominio (`usuario`, `pelicula`, `funcion`, `asiento`, `venta` y `consulta`) con sus modelos.
+- `controller`: controladores web separados para navegación, películas, pedidos, consultas y administración. Atienden rutas y preparan los datos que necesitan las vistas JSP.
+- `service`: interfaces y clases `ServiceImpl` con las reglas de registro, programación de funciones y reserva de asientos.
+- `repository`: interfaces `*DAO` y sus implementaciones `*Repository` con `JdbcTemplate`; aquí viven las consultas SQL.
+- `config`: configuración MVC e interceptor que protege las rutas de administración.
+- `src/main/resources/schema.sql` y `data.sql`: tablas y datos iniciales de H2.
+
+Las reservas se guardan en una transacción: si un asiento ya fue ocupado, no queda un pedido incompleto. Los datos viven en el archivo local `data/boleteria`.
+
 Acceso inicial administrador: `admin@chaplin.pe` / `admin123`.
 
 Los horarios de muestra se generan para el día siguiente al inicializar los datos. No se guardan datos bancarios ni se integra una pasarela de pago; la compra es una reserva confirmada para el alcance de la entrega.
